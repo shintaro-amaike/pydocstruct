@@ -17,8 +17,8 @@ exec(version_file.read_text(), version_info)
 setup(
     name="pydocstruct",
     version=version_info["__version__"],
-    author="Your Name",
-    author_email="your.email@example.com",
+    author="Shintaro Amaike",
+    author_email="shintaro.amaike@gmail.com",
     description="Document structuring library for RAG and vector databases",
     long_description=long_description,
     long_description_content_type="text/markdown",

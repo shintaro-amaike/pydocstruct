@@ -5,7 +5,14 @@ from pathlib import Path
 from typing import Any
 
 from pydocstruct.__version__ import __version__
-from pydocstruct.core.document import Document
+from pydocstruct.core import (
+    BaseChunker,
+    BaseLoader,
+    Document,
+    RecursiveCharacterChunker,
+    TextChunker,
+    TokenChunker,
+)
 from pydocstruct.loaders import (
     CsvLoader,
     DocxLoader,
@@ -17,9 +24,44 @@ from pydocstruct.loaders import (
     TextLoader,
     XmlLoader,
 )
-from pydocstruct.utils.file_utils import get_file_extension
+from pydocstruct.processors import (
+    HtmlNoiseCleaner,
+    MetadataExtractor,
+    PiiRedactor,
+    TextCleaner,
+)
+from pydocstruct.utils import get_file_extension, get_mime_type, is_supported_format
 
-__all__ = ["load", "Document", "__version__"]
+__all__ = [
+    "load",
+    "Document",
+    "__version__",
+    # Core
+    "BaseChunker",
+    "TextChunker",
+    "RecursiveCharacterChunker",
+    "TokenChunker",
+    "BaseLoader",
+    # Loaders
+    "CsvLoader",
+    "DocxLoader",
+    "ExcelLoader",
+    "HtmlLoader",
+    "JsonLoader",
+    "MarkdownLoader",
+    "PDFLoader",
+    "TextLoader",
+    "XmlLoader",
+    # Processors
+    "TextCleaner",
+    "MetadataExtractor",
+    "PiiRedactor",
+    "HtmlNoiseCleaner",
+    # Utils
+    "get_file_extension",
+    "get_mime_type",
+    "is_supported_format",
+]
 
 
 def load(file_path: str | Path, **kwargs: Any) -> list[Document]:
