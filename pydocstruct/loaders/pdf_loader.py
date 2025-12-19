@@ -11,6 +11,11 @@ except ImportError:
     pytesseract = None
     convert_from_path = None
 
+try:
+    import pypdf
+except ImportError:
+    pypdf = None
+
 from pydocstruct.core.document import Document
 from pydocstruct.core.loader import BaseLoader
 
