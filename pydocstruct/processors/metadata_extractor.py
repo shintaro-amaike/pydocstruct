@@ -1,7 +1,4 @@
 """pydocstruct/processors/metadata_extractor.py"""
-from __future__ import annotations
-
-import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -22,7 +19,7 @@ class MetadataExtractor:
             "file_name": path.name,
             "file_extension": path.suffix.lower(),
             "file_size": stat.st_size,
-            "created_at": datetime.fromtimestamp(stat.st_ctime).isoformat(),
+            "file_created_at": datetime.fromtimestamp(stat.st_ctime).isoformat(),
             "modified_at": datetime.fromtimestamp(stat.st_mtime).isoformat(),
             "abs_path": str(path.absolute()),
         }

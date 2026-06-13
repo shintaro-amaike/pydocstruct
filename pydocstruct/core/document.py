@@ -1,7 +1,5 @@
 """pydocstruct/core/document.py"""
-from __future__ import annotations
-
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 from datetime import datetime
 from typing import Any
 
@@ -54,13 +52,14 @@ class Document:
         }
     
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> Document:
+    def from_dict(cls, data: dict[str, Any]) -> "Document":
         """Generate Document instance from dictionary
-        
+
         Args:
             data (dict[str, Any]): Dictionary of document data
-            
+
         Returns:
             Document: Generated Document instance
         """
-        return cls(**data)
+        known = {f.name for f in fields(cls)}
+        return cls(**{k: v for k, v in data.items() if k in known})

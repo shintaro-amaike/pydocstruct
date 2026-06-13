@@ -1,5 +1,4 @@
 import re
-from typing import List, Pattern
 
 class PiiRedactor:
     """Processor to detect and redact/replace PII (Personally Identifiable Information)"""
@@ -11,9 +10,9 @@ class PiiRedactor:
     # Allows valid formats with or without hyphens
     PHONE_PATTERN = re.compile(r'(\d{2,4}[-\(]\d{2,4}[-\)]\d{3,4})|(\d{10,11})')
     
-    # Credit cards (simplified: 12-19 digits)
-    # Does not perform Luhn algorithm check
-    CREDIT_CARD_PATTERN = re.compile(r'\b(?:\d[ -]*?){13,16}\b')
+    # Credit cards: 13-19 digits with optional single space/hyphen between digits.
+    # Uses lookaheads instead of \b so boundaries work with non-word separators.
+    CREDIT_CARD_PATTERN = re.compile(r'(?<!\d)\d(?:[ -]?\d){12,18}(?!\d)')
 
     @classmethod
     def redact(cls, text: str, replace_text: str = "[REDACTED]") -> str:

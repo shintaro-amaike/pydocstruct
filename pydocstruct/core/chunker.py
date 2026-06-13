@@ -1,8 +1,7 @@
 """pydocstruct/core/chunker.py"""
-from __future__ import annotations
-
 import re
-from typing import Any, List
+from abc import ABC, abstractmethod
+from typing import Any
 
 try:
     import tiktoken
@@ -12,7 +11,7 @@ except ImportError:
 from pydocstruct.core.document import Document
 
 
-class BaseChunker:
+class BaseChunker(ABC):
     """Base class for chunkers"""
 
     def split_documents(self, documents: list[Document]) -> list[Document]:
@@ -46,8 +45,9 @@ class BaseChunker:
         
         return chunked_documents
 
+    @abstractmethod
     def split_text(self, text: str) -> list[str]:
-        raise NotImplementedError
+        ...
 
 
 class TextChunker(BaseChunker):
@@ -81,12 +81,18 @@ class TextChunker(BaseChunker):
             
             chunk_text = text[start_index:end_index]
             last_space = chunk_text.rfind(' ')
-            
-            if last_space != -1:
+
+            # last_space > 0 to avoid end_index == start_index, which causes regression
+            if last_space > 0:
                 end_index = start_index + last_space
-            
-            chunks.append(text[start_index:end_index].strip())
-            start_index = end_index - self.chunk_overlap
+
+            chunk = text[start_index:end_index].strip()
+            if chunk:
+                chunks.append(chunk)
+
+            next_start = end_index - self.chunk_overlap
+            # Guarantee forward progress to prevent infinite regression
+            start_index = max(next_start, start_index + 1)
         
         return chunks
 
@@ -111,8 +117,6 @@ class RecursiveCharacterChunker(BaseChunker):
         return self._split_text(text, self.separators)
 
     def _split_text(self, text: str, separators: list[str]) -> list[str]:
-        final_chunks = []
-        
         # Determine separator to use
         separator = separators[-1]
         new_separators = []
@@ -145,7 +149,8 @@ class RecursiveCharacterChunker(BaseChunker):
                 if new_separators:
                     good_splits.extend(self._split_text(split, new_separators))
                 else:
-                    good_splits.append(split)
+                    # No separators remain; fall back to character-level splitting
+                    good_splits.extend(self._split_text(split, [""]))
                     
         return self._merge_splits(good_splits, _separator)
 
@@ -162,17 +167,13 @@ class RecursiveCharacterChunker(BaseChunker):
                     if doc.strip():
                         chunks.append(doc)
                     
-                    # Overlap handling (simplified: keep last n items that fit)
-                    # For strict overlap, logic needs to be more complex.
-                    # Here we just start new doc with current split.
-                    # Implementing a robust overlap queue is better.
-                    
                     while total_len > self.chunk_overlap and current_doc:
-                         total_len -= len(current_doc[0]) + (len(separator) if len(current_doc) > 1 else 0)
-                         current_doc.pop(0)
-                         
-                current_doc = [split]
-                total_len = len(split)
+                        total_len -= len(current_doc[0]) + (len(separator) if len(current_doc) > 1 else 0)
+                        current_doc.pop(0)
+
+                # Append new split to overlap-retained items (fixes: overlap was discarded)
+                current_doc.append(split)
+                total_len += (len(separator) if len(current_doc) > 1 else 0) + len(split)
             else:
                 current_doc.append(split)
                 total_len += _len + (len(separator) if len(current_doc) > 1 else 0)

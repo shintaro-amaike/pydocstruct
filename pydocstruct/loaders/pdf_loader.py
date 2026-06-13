@@ -1,6 +1,4 @@
 """pydocstruct/loaders/pdf_loader.py"""
-from __future__ import annotations
-
 from pathlib import Path
 from typing import Any
 
@@ -64,52 +62,47 @@ class PDFLoader(BaseLoader):
     def load(self) -> list[Document]:
         """Load PDF file"""
         documents = []
-        
-        try:
-            with open(self.file_path, "rb") as file:
-                pdf_reader = pypdf.PdfReader(file)
-                
-                for page_num, page in enumerate(pdf_reader.pages, start=1):
-                    # Determine text extraction mode
-                    extraction_mode = "layout" if self.use_layout else "plain"
-                    try:
-                        text = page.extract_text(extraction_mode=extraction_mode)
-                    except Exception:
-                         # fallback to plain if layout fails (or old pypdf version)
-                        text = page.extract_text()
-                    
-                    # Run OCR if text is empty and OCR is enabled
-                    if not text.strip() and self.use_ocr:
-                        text = self._perform_ocr(page_num)
 
-                    if not text.strip():
-                        continue
-                    
-                    metadata = self._create_base_metadata()
-                    metadata["page_count"] = len(pdf_reader.pages)
-                    metadata["page_number"] = page_num
-                    
-                    if pdf_reader.metadata:
-                        metadata["pdf_metadata"] = {
-                            "title": pdf_reader.metadata.get("/Title"),
-                            "author": pdf_reader.metadata.get("/Author"),
-                            "subject": pdf_reader.metadata.get("/Subject"),
-                            "creator": pdf_reader.metadata.get("/Creator"),
-                        }
-                    
-                    documents.append(Document(
-                        content=text,
-                        metadata=metadata,
-                        source=str(self.file_path),
-                        page_number=page_num,
-                    ))
-        except Exception as e:
-            # OCR only fallback if PDF is unreadable by pypdf (e.g. encrypted or weird format but ok for image tools?)
-            # But usually pypdf handles basic read.
-            # If use_ocr is strictly requested for ALL pages despite text presence, users should implement logic to ignore extract_text.
-            # Current logic: try text -> empty? -> OCR.
-            raise e
-        
+        with open(self.file_path, "rb") as file:
+            pdf_reader = pypdf.PdfReader(file)
+
+            for page_num, page in enumerate(pdf_reader.pages, start=1):
+                # Determine text extraction mode
+                extraction_mode = "layout" if self.use_layout else "plain"
+                try:
+                    text = page.extract_text(extraction_mode=extraction_mode)
+                except Exception:
+                    # fallback to plain if layout fails (or old pypdf version)
+                    text = page.extract_text()
+
+                text = text or ""  # extract_text() can return None on some pages
+
+                # Run OCR if text is empty and OCR is enabled
+                if not text.strip() and self.use_ocr:
+                    text = self._perform_ocr(page_num)
+
+                if not text.strip():
+                    continue
+
+                metadata = self._create_base_metadata()
+                metadata["page_count"] = len(pdf_reader.pages)
+                metadata["page_number"] = page_num
+
+                if pdf_reader.metadata:
+                    metadata["pdf_metadata"] = {
+                        "title": pdf_reader.metadata.get("/Title"),
+                        "author": pdf_reader.metadata.get("/Author"),
+                        "subject": pdf_reader.metadata.get("/Subject"),
+                        "creator": pdf_reader.metadata.get("/Creator"),
+                    }
+
+                documents.append(Document(
+                    content=text,
+                    metadata=metadata,
+                    source=str(self.file_path),
+                    page_number=page_num,
+                ))
+
         return documents
 
     def _perform_ocr(self, page_num: int) -> str:
@@ -128,6 +121,5 @@ class PDFLoader(BaseLoader):
                 
             return pytesseract.image_to_string(images[0], lang=self.ocr_lang)
             
-        except Exception as e:
-            # Log empty string or error on OCR failure, returning empty string here
+        except Exception:
             return ""

@@ -1,6 +1,4 @@
 """Core modules for pydocstruct"""
-from __future__ import annotations
-
 from pydocstruct.core.chunker import (
     BaseChunker,
     RecursiveCharacterChunker,

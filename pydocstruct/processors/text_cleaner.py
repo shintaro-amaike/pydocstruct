@@ -1,6 +1,4 @@
 """pydocstruct/processors/text_cleaner.py"""
-from __future__ import annotations
-
 import re
 
 
@@ -20,7 +18,7 @@ class TextCleaner:
     @staticmethod
     def remove_emails(text: str, replacement: str = "") -> str:
         """メールアドレスを削除または置換"""
-        return re.sub(r"\S+@\S+\.\S+", replacement, text)
+        return re.sub(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}", replacement, text)
 
     @staticmethod
     def clean(

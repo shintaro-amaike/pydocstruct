@@ -41,6 +41,8 @@ class HtmlNoiseCleaner:
                 
         for element in soup.find_all(attrs={"id": True}):
             id_val = element.get("id")
+            if not isinstance(id_val, str):
+                continue
             if any(noise in id_val.lower() for noise in cls.NOISE_CLASSES):
                 element.decompose()
         

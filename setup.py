@@ -1,6 +1,4 @@
 """setup.py"""
-from __future__ import annotations
-
 from pathlib import Path
 
 from setuptools import find_packages, setup
@@ -31,35 +29,36 @@ setup(
         "Topic :: Text Processing :: General",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
     ],
-    python_requires=">=3.9",
+    python_requires=">=3.10",
     install_requires=[
-        "pypdf>=3.0.0",
-        "python-docx>=1.0.0",
+        "pypdf>=4.0.0",
+        "python-docx>=1.1.0",
         "beautifulsoup4>=4.12.0",
-        "lxml>=4.9.0",
+        "lxml>=5.0.0",
         "markdown>=3.5.0",
     ],
     extras_require={
         "dev": [
-            "pytest>=7.4.0",
-            "pytest-cov>=4.1.0",
-            "black>=23.0.0",
-            "flake8>=6.0.0",
-            "mypy>=1.5.0",
-            "isort>=5.12.0",
+            "pytest>=8.0.0",
+            "pytest-cov>=5.0.0",
+            "black>=24.0.0",
+            "flake8>=7.0.0",
+            "mypy>=1.10.0",
+            "isort>=5.13.0",
         ],
         "all": [
             "openpyxl>=3.1.0",
-            "pandas>=2.0.0",
+            "pandas>=2.2.0",
             "tabulate>=0.9.0",
             "markdownify>=0.11.0",
-            "tiktoken>=0.5.0",
-            "pdf2image>=1.16.0",
+            "tiktoken>=0.7.0",
+            "pdf2image>=1.17.0",
             "pytesseract>=0.3.10",
         ],
     },

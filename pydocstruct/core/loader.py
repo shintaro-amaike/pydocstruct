@@ -1,6 +1,4 @@
 """pydocstruct/core/loader.py"""
-from __future__ import annotations
-
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
@@ -37,9 +35,11 @@ class BaseLoader(ABC):
         self.encoding = encoding
         self.metadata = kwargs
         
-        # Check if file exists
+        # Check if file exists and is a regular file
         if not self.file_path.exists():
             raise FileNotFoundError(f"File not found: {self.file_path}")
+        if not self.file_path.is_file():
+            raise IsADirectoryError(f"Path is a directory, not a file: {self.file_path}")
     
     @abstractmethod
     def load(self) -> list[Document]:

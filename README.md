@@ -1,6 +1,7 @@
 # pydocstruct
 
 [![PyPI version](https://badge.fury.io/py/pydocstruct.svg)](https://badge.fury.io/py/pydocstruct)
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)](https://www.python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **pydocstruct** is a Python library designed to convert various file formats (PDF, DOCX, Excel, Markdown, CSV, JSON, etc.) into structured data suitable for RAG (Retrieval-Augmented Generation) systems and vector databases.
@@ -18,6 +19,10 @@ It provides features optimized for RAG, such as token-based chunking, Markdown t
 - 🛡️ **Data Cleaning**: 
     - **PII Redaction**: Automatically masks personal information like emails and phone numbers.
     - **Noise Reduction**: Removes HTML headers, footers, advertisements, etc.
+
+## Requirements
+
+- Python 3.10 or higher (3.10 – 3.14)
 
 ## Installation
 
